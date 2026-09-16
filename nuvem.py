@@ -1,7 +1,7 @@
 import os
 import sys
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware  # 🔓 Destrava a segurança de rede
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import edge_tts
 from datetime import datetime
@@ -10,10 +10,10 @@ import random
 # Inicializa o servidor web da Kira
 app = FastAPI(title="K.I.R.A. AI - Nuvem Core")
 
-# Configuração do Middleware de CORS para aceitar mensagens de qualquer app/celular
+# Configuração do Middleware de CORS para destravar as mensagens vindas do app
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permite conexões de qualquer lugar do mundo
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,7 +23,8 @@ class ComandoUsuario(BaseModel):
     texto: str
     usuario: str = "Senhor"
 
-def obtener_saudacao_temporal():
+def obter_saudacao_temporal():
+    """Gera uma saudação com base no horário real do computador"""
     hora_atual = datetime.now().hour
     if 5 <= hora_atual < 12:
         return "Bom dia"
@@ -41,7 +42,7 @@ def processar_mente_nuvem(dados: ComandoUsuario):
     texto = dados.texto.lower().strip()
     texto_limpo = texto.replace("kira", "").replace("sara", "").replace("jarvis", "").replace("oi", "").replace("abra", "").replace("abre", "").strip()
     
-    saudacao = obtener_saudacao_temporal()
+    saudacao = obter_saudacao_temporal()
     nome = dados.usuario
     
     if "horas" in texto_limpo or "hora" in texto_limpo:
@@ -55,7 +56,7 @@ def processar_mente_nuvem(dados: ComandoUsuario):
     elif "piada" in texto_limpo or "conte algo engraçado" in texto_limpo:
         lista_piadas = [
             "Por que o computador foi ao médico? Porque ele estava com um vírus de sistema.",
-            "O que o código Python disse para o café? Sem você, eu não compilo de manhã.",
+            "O que o código Python disse para o café? Sem você, io não compilo de manhã.",
             "Existem 10 tipos de pessoas no mundo: as que entendem binário e as que não entendem."
         ]
         resposta = f"Acessando banco de dados humorísticos na nuvem. {random.choice(lista_piadas)}"
