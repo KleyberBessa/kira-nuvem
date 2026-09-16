@@ -1,6 +1,7 @@
 import os
 import sys
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware  # 🔓 Destrava a segurança de rede
 from pydantic import BaseModel
 import edge_tts
 from datetime import datetime
@@ -9,12 +10,20 @@ import random
 # Inicializa o servidor web da Kira
 app = FastAPI(title="K.I.R.A. AI - Nuvem Core")
 
-# Modelo de dados que o servidor vai receber da internet
+# Configuração do Middleware de CORS para aceitar mensagens de qualquer app/celular
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permite conexões de qualquer lugar do mundo
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class ComandoUsuario(BaseModel):
     texto: str
     usuario: str = "Senhor"
 
-def obter_saudacao_temporal():
+def obtener_saudacao_temporal():
     hora_atual = datetime.now().hour
     if 5 <= hora_atual < 12:
         return "Bom dia"
@@ -25,19 +34,16 @@ def obter_saudacao_temporal():
 
 @app.get("/")
 def status_servidor():
-    """Rota simples para testar se o servidor da Kira está vivo na internet"""
     return {"status": "online", "sistema": "K.I.R.A. AI Core", "nuvem": "ativa"}
 
 @app.post("/perguntar")
 def processar_mente_nuvem(dados: ComandoUsuario):
-    """Cérebro da Kira que vai responder requisições do computador ou do celular"""
     texto = dados.texto.lower().strip()
     texto_limpo = texto.replace("kira", "").replace("sara", "").replace("jarvis", "").replace("oi", "").replace("abra", "").replace("abre", "").strip()
     
-    saudacao = obter_saudacao_temporal()
+    saudacao = obtener_saudacao_temporal()
     nome = dados.usuario
     
-    # --- BANCO DE DADOS DA MENTE DA KIRA NA NUVEM ---
     if "horas" in texto_limpo or "hora" in texto_limpo:
         hora_formatada = datetime.now().strftime('%H horas e %M minutos')
         resposta = f"Sincronização de nuvem concluída. Agora são exatamente {hora_formatada}, {nome}."
